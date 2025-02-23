@@ -19,6 +19,7 @@ public class ChildController : MonoBehaviour
     bool isJump = false;
     public bool magnetReceived = false;
     float speedIncreaseFactor = 0.1f;
+    float laneChangeSpeed = 10f;
 
     Manager manager;
     HighScore highScore;
@@ -33,6 +34,8 @@ public class ChildController : MonoBehaviour
         manager = GameObject.Find("Manager").GetComponent<Manager>();
         highScore = GameObject.Find("Manager").GetComponent<HighScore>();
         panelManager = GameObject.Find("Manager").GetComponent<PanelManager>();
+        rb.drag = 0.5f; // Daha akýcý hareket için sürtünme azaltýldý
+        rb.mass = 1f;   // Kütle optimize edildi
     }
 
     private void OnCollisionStay(Collision collision)
@@ -114,14 +117,14 @@ public class ChildController : MonoBehaviour
             }
         }
 
-        if (right)
-        {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(-0.5f, transform.position.y, transform.position.z), runSpeed * Time.deltaTime);
-        }
-        if (left)
-        {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(0.5f, transform.position.y, transform.position.z), runSpeed * Time.deltaTime);
-        }
+        // Hafif yumuþak ama hýzlý saða sola geçiþ
+        float targetX = transform.position.x;
+        if (right) targetX = -0.5f;
+        if (left) targetX = 0.5f;
+
+        transform.position = Vector3.Lerp(transform.position, new Vector3(targetX, transform.position.y, transform.position.z), laneChangeSpeed * Time.deltaTime);
+
+        // Karakterin sürekli ileri gitmesi
         transform.Translate(0, 0, runSpeed * Time.deltaTime);
     }
 
@@ -129,7 +132,7 @@ public class ChildController : MonoBehaviour
     {
         anim.SetTrigger("jump");
 
-        rb.velocity = Vector3.zero;
-        rb.velocity = Vector3.up * jumpPower;
+        // Mevcut ileri hýz korunarak sadece yukarýya kuvvet uygula
+        rb.velocity = new Vector3(rb.velocity.x, jumpPower, rb.velocity.z);
     }
 }
