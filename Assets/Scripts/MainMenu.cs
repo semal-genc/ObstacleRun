@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    GecisReklami gecisReklami;
+
+    private void Start()
+    {
+        gecisReklami = FindObjectOfType<GecisReklami>();
+    }
     public void Quit()
     {
 #if UNITY_EDITOR
@@ -16,7 +22,13 @@ public class MainMenu : MonoBehaviour
 
     public void Play()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene(1);
+        if (gecisReklami != null)
+        {
+            gecisReklami.GecisReklamiGoster(1);  // Reklam kapanýnca sahne 1'e geçecek
+        }
+        else
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 }

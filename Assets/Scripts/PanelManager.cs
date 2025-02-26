@@ -9,12 +9,25 @@ public class PanelManager : MonoBehaviour
     public GameObject finish_panel;
     public GameObject menuPanel;
     public GameObject menu;
+    GecisReklami gecisReklami;
+
+    private void Start()
+    {
+        gecisReklami = FindObjectOfType<GecisReklami>();
+    }
 
     public void TryAgain()
     {
-        Time.timeScale = 1;
         menu.SetActive(true);
-        SceneManager.LoadScene(1);
+        if (gecisReklami != null)
+        {
+            gecisReklami.GecisReklamiGoster(1);  // Reklamdan sonra sahne 1'e geç
+        }
+        else
+        {
+            SceneManager.LoadScene(1);
+            Time.timeScale = 1;
+        }
     }
 
     public void Menu()
@@ -29,7 +42,14 @@ public class PanelManager : MonoBehaviour
 
     public void MainMenu()
     {
-        SceneManager.LoadScene(0);
+        if (gecisReklami != null)
+        {
+            gecisReklami.GecisReklamiGoster(0);  // Reklamdan sonra sahne 0'a geç
+        }
+        else
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 
     public void Resume()

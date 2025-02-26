@@ -97,42 +97,48 @@ public class ChildController : MonoBehaviour
     }
 
     void Update()
+{
+    if (Input.touchCount > 0)
     {
-        if (Input.touchCount > 0)
+        Touch touch = Input.GetTouch(0);
+        float swipeSensitivity = 10f;
+
+        // Yatay kaydýrmalar
+        if (touch.deltaPosition.x > swipeSensitivity)
         {
-            Touch touch = Input.GetTouch(0);
-            if (touch.deltaPosition.x > 50f)
-            {
-                right = false;
-                left = true;
-            }
-            if (touch.deltaPosition.x < -50f)
-            {
-                right = true;
-                left = false;
-            }
-            if (touch.deltaPosition.y > 50f && !isJump)
-            {
-                Jump();
-            }
+            right = false;
+            left = true;
+        }
+        if (touch.deltaPosition.x < -swipeSensitivity)
+        {
+            right = true;
+            left = false;
         }
 
-        // Hafif yumuþak ama hýzlý saða sola geçiþ
-        float targetX = transform.position.x;
-        if (right) targetX = -0.5f;
-        if (left) targetX = 0.5f;
-
-        transform.position = Vector3.Lerp(transform.position, new Vector3(targetX, transform.position.y, transform.position.z), laneChangeSpeed * Time.deltaTime);
-
-        // Karakterin sürekli ileri gitmesi
-        transform.Translate(0, 0, runSpeed * Time.deltaTime);
+        // Dikey kaydýrma (zýplama)
+        if (touch.deltaPosition.y > 50 && !isJump)
+        {
+            Jump();
+        }
     }
 
-    void Jump()
-    {
-        anim.SetTrigger("jump");
+    // Hafif yumuþak ama hýzlý saða sola geçiþ
+    float targetX = transform.position.x;
+    if (right) targetX = -0.5f;
+    if (left) targetX = 0.5f;
 
-        // Mevcut ileri hýz korunarak sadece yukarýya kuvvet uygula
-        rb.velocity = new Vector3(rb.velocity.x, jumpPower, rb.velocity.z);
-    }
+    transform.position = Vector3.Lerp(transform.position, new Vector3(targetX, transform.position.y, transform.position.z), laneChangeSpeed * Time.deltaTime);
+
+    // Karakterin sürekli ileri gitmesi
+    transform.Translate(0, 0, runSpeed * Time.deltaTime);
+}
+
+void Jump()
+{
+    anim.SetTrigger("jump");
+
+    // Sadece dikey hýzda deðiþiklik yaparak zýplama iþlemi
+    rb.velocity = new Vector3(rb.velocity.x, jumpPower, rb.velocity.z);
+}
+
 }
